@@ -2,7 +2,7 @@ import path from "node:path"
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@workspace/ui"],
+  transpilePackages: ["@workspace/ui", "@workspace/api-client"],
   // Produces a self-contained .next/standalone build for lean Docker images.
   output: "standalone",
   // In a monorepo, tracing must be rooted at the repo root (not this app
