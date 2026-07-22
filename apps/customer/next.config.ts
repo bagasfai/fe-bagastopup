@@ -9,6 +9,14 @@ const nextConfig: NextConfig = {
   // folder), or the standalone bundle will miss the packages/ui workspace
   // dependency and crash at runtime.
   outputFileTracingRoot: path.join(__dirname, "../../"),
+  images: {
+    // Game logos/hero art are locally-generated placeholder SVGs; Next's
+    // image optimizer refuses SVGs by default (XSS risk from untrusted
+    // uploads), which doesn't apply to our own static assets.
+    dangerouslyAllowSVG: true,
+    contentDispositionType: "attachment",
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+  },
 }
 
 export default nextConfig
