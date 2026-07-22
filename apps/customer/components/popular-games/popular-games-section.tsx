@@ -9,11 +9,11 @@ import type { PopularGame } from "@/lib/dummy-data"
 function PopularGamesSection({ games }: { games: PopularGame[] }) {
   return (
     <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
-      <div className="mb-5 flex items-center justify-between">
-        <h2 className="text-lg font-bold sm:text-2xl">Game Populer</h2>
+      <div className="mb-5 flex items-end justify-between gap-4 border-b border-border pb-3">
+        <h2 className="text-lg font-semibold sm:text-2xl">Game Populer</h2>
         <Link
           href="#produk"
-          className="flex items-center gap-0.5 text-sm font-medium text-primary hover:underline"
+          className="flex shrink-0 items-center gap-0.5 text-sm font-medium whitespace-nowrap text-primary underline-offset-4 hover:underline"
         >
           Lihat Semua
           <ChevronRightIcon className="size-4" />

@@ -44,8 +44,8 @@ function FeedbackFormSection() {
 
   return (
     <section className="mx-auto max-w-2xl px-4 py-10 sm:px-6 sm:py-14">
-      <h2 className="mb-2 text-lg font-bold sm:text-2xl">Kasih Masukan</h2>
-      <p className="mb-6 text-sm text-muted-foreground">
+      <h2 className="mb-2 text-lg font-semibold sm:text-2xl">Kasih Masukan</h2>
+      <p className="mb-6 border-b border-border pb-6 text-sm text-muted-foreground">
         Ada saran atau kendala? Kami senang mendengarnya.
       </p>
 

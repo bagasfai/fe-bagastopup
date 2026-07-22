@@ -8,7 +8,7 @@ import { ProductIcon } from "@/components/all-products/product-icon"
 // Server Component — no interactivity of its own, just a static link/card.
 function ProductCard({ product }: { product: Product }) {
   return (
-    <Link href="#" className="block">
+    <Link href={`/product/${product.id}`} className="block">
       <Card
         size="sm"
         className="flex-row items-center gap-3 px-3 shadow-none ring-1 ring-foreground/10 transition-colors hover:bg-muted/60"

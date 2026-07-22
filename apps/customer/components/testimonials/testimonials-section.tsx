@@ -20,7 +20,9 @@ function TestimonialsSection() {
       id="testimoni"
       className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14"
     >
-      <h2 className="mb-6 text-lg font-bold sm:text-2xl">Kata Mereka</h2>
+      <h2 className="mb-6 border-b border-border pb-3 text-lg font-semibold sm:text-2xl">
+        Kata Mereka
+      </h2>
 
       <Carousel opts={{ align: "start", loop: false }}>
         <CarouselContent>

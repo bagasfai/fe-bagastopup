@@ -1,3 +1,4 @@
+import * as React from "react"
 import Link from "next/link"
 import { CameraIcon, MusicIcon, ThumbsUpIcon, XIcon } from "lucide-react"
 
@@ -32,34 +33,42 @@ const SOCIAL_LINKS = [
 ]
 
 // Server Component — the footer is entirely static content.
+//
+// Mast-headed shape: one banded footer anchored by the wordmark, not the
+// 4-column Product/Company/Resources/Legal grid every SaaS template ships.
+// All the same links stay — grouped inline by category instead of stacked
+// in columns — because the categories are still worth keeping legible.
 function Footer() {
   return (
     <footer className="border-t border-border bg-card">
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
-          <div className="col-span-2 sm:col-span-1">
-            <p className="text-lg font-bold text-primary">BagasTopup</p>
-            <p className="mt-2 max-w-48 text-sm text-muted-foreground">
-              Top up game, voucher, dan tagihan tercepat, terpercaya untuk
-              semua kalangan.
-            </p>
-          </div>
+        <p className="font-mono text-lg font-semibold tracking-tight text-primary">
+          BagasTopup
+        </p>
+        <p className="mt-2 max-w-md text-sm text-muted-foreground">
+          Top up game, voucher, dan tagihan tercepat, terpercaya untuk semua
+          kalangan.
+        </p>
 
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-x-8 sm:gap-y-3">
           {Object.entries(FOOTER_LINKS).map(([title, links]) => (
-            <div key={title}>
-              <p className="text-sm font-semibold">{title}</p>
-              <ul className="mt-3 flex flex-col gap-2">
-                {links.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-muted-foreground hover:text-foreground"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+            <div key={title} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
+              <span className="text-muted-foreground/70">{title}</span>
+              {links.map((link, index) => (
+                <React.Fragment key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="whitespace-nowrap text-foreground hover:text-primary"
+                  >
+                    {link.label}
+                  </Link>
+                  {index < links.length - 1 && (
+                    <span aria-hidden className="text-muted-foreground/40">
+                      &middot;
+                    </span>
+                  )}
+                </React.Fragment>
+              ))}
             </div>
           ))}
         </div>

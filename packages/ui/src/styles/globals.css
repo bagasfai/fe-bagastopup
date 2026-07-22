@@ -127,6 +127,24 @@
     --sidebar-ring: oklch(0.72 0.14 235);
 }
 
+/* Hallmark · genre: editorial · macrostructure: Ecosystem Index · theme: brand-locked (existing pastel-blue/navy OKLCH) · enrichment: none · nav: N1b · footer: Ft1
+ * pre-emit critique: P4 H4 E4 S4 R5 V4 · contrast: pass (40-41) · mobile: pass (34,49-57) · tokens: pass (48) · chrome: pass (47) · honest: pass (46)
+ * known gap: hero carousel autoplay pauses on mouse-enter only, not keyboard focus (WCAG 2.2.2) — pre-existing, not touched by this pass, flagged for follow-up
+ */
+/*
+ * Structural layer added by a Hallmark redesign pass on apps/customer's
+ * homepage. Colour tokens above are untouched (brand-locked) — this only
+ * adds the named easing curves motion.md requires so every transition in
+ * the app references one of three curves instead of ad-hoc bezier values.
+ * Mirrored as JS arrays in apps/customer/lib/motion.ts for Framer Motion,
+ * which can't consume CSS custom properties directly.
+ */
+:root {
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -134,4 +152,10 @@
   body {
     @apply bg-background text-foreground;
     }
+  /* Prevents horizontal scroll from any deliberately edge-to-edge element
+   * (carousel, marquee) without breaking position: sticky descendants —
+   * overflow-x: hidden would create a new scroll container and unstick them. */
+  html, body {
+    overflow-x: clip;
+  }
 }

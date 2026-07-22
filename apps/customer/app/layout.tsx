@@ -15,6 +15,9 @@ const fontMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
+  // Lets generateMetadata's relative openGraph image URLs (e.g. the
+  // product detail page's local /games/*.svg) resolve to absolute URLs.
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: "BagasTopup — Customer",
 }
 

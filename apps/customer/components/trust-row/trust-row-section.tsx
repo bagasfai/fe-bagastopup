@@ -1,6 +1,3 @@
-"use client"
-
-import { motion } from "framer-motion"
 import {
   BadgePercentIcon,
   HeadsetIcon,
@@ -9,8 +6,6 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
-import { Card } from "@workspace/ui/components/card"
-import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion"
 import { trustPoints, type TrustPointIconKey } from "@/lib/dummy-data"
 
 const TRUST_ICONS: Record<TrustPointIconKey, LucideIcon> = {
@@ -20,36 +15,25 @@ const TRUST_ICONS: Record<TrustPointIconKey, LucideIcon> = {
   "badge-percent": BadgePercentIcon,
 }
 
-// Client Component: fade/slide-in as this section enters the viewport.
+// Server Component: no card boxes, no scroll reveal — a hairline-divided
+// strip with the icon inline beside the heading, not stacked above it (the
+// icon-tile card grid is the single most recognised AI feature-block tell).
 function TrustRowSection() {
-  const prefersReducedMotion = usePrefersReducedMotion()
-
   return (
-    <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {trustPoints.map((point, index) => {
+    <section className="mx-auto max-w-6xl border-y border-border px-4 py-8 sm:px-6">
+      <div className="grid grid-cols-1 divide-y divide-border sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
+        {trustPoints.map((point) => {
           const Icon = TRUST_ICONS[point.iconKey]
           return (
-            <motion.div
-              key={point.id}
-              initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{
-                duration: 0.35,
-                delay: prefersReducedMotion ? 0 : index * 0.08,
-              }}
-            >
-              <Card className="h-full gap-3 p-5">
-                <div className="flex size-10 items-center justify-center rounded-lg bg-primary/15 text-primary">
-                  <Icon className="size-5" />
-                </div>
+            <div key={point.id} className="flex gap-3 px-0 py-4 sm:px-5 sm:first:pl-0">
+              <Icon className="size-5 shrink-0 text-primary" />
+              <div className="min-w-0">
                 <h3 className="font-semibold">{point.title}</h3>
                 <p className="text-sm text-muted-foreground">
                   {point.description}
                 </p>
-              </Card>
-            </motion.div>
+              </div>
+            </div>
           )
         })}
       </div>

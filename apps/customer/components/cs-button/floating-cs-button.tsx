@@ -39,4 +39,4 @@ function FloatingCsButton() {
   )
 }
 
-export { FloatingCsButton }
+export { FloatingCsButton, WHATSAPP_NUMBER }

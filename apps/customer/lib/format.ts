@@ -9,4 +9,9 @@ function formatIDR(amount: number) {
   return idrFormatter.format(amount)
 }
 
-export { formatIDR }
+/** Formats a payment method's admin fee, e.g. formatFee(0) -> "Gratis", formatFee(2500) -> "+Rp2.500". */
+function formatFee(feeIDR: number) {
+  return feeIDR === 0 ? "Gratis" : `+${formatIDR(feeIDR)}`
+}
+
+export { formatIDR, formatFee }

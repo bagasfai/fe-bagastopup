@@ -16,6 +16,7 @@ import {
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion"
+import { EASE_OUT } from "@/lib/motion"
 import type { HeroSlide } from "@/lib/dummy-data"
 
 function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
@@ -53,7 +54,7 @@ function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
         <CarouselContent className="-ml-0">
           {slides.map((slide, index) => (
             <CarouselItem key={slide.id} className="basis-full pl-0">
-              <div className="relative aspect-video w-full overflow-hidden rounded-2xl sm:aspect-[21/9]">
+              <div className="relative aspect-video w-full overflow-hidden rounded-xl ring-1 ring-foreground/10 sm:aspect-[21/9]">
                 <Image
                   src={slide.imageSrc}
                   alt=""
@@ -73,16 +74,16 @@ function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
                         ? { opacity: 1, y: 0 }
                         : { opacity: 0, y: 16 }
                   }
-                  transition={{ duration: 0.4, ease: "easeOut" }}
+                  transition={{ duration: 0.4, ease: EASE_OUT }}
                 >
-                  <h2 className="max-w-md text-xl font-bold text-white sm:text-3xl">
+                  <h2 className="max-w-md text-xl font-semibold text-white sm:text-3xl">
                     {slide.title}
                   </h2>
                   <p className="max-w-md text-sm text-white/85 sm:text-base">
                     {slide.description}
                   </p>
                   {slide.ctaLabel && (
-                    <Button asChild size="lg" className="mt-2 w-fit">
+                    <Button asChild size="lg" className="mt-2 w-fit whitespace-nowrap">
                       <a href={slide.ctaHref}>{slide.ctaLabel}</a>
                     </Button>
                   )}
@@ -104,7 +105,7 @@ function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
             aria-label={`Ke slide ${index + 1}`}
             onClick={() => api?.scrollTo(index)}
             className={cn(
-              "h-2 rounded-full transition-all",
+              "h-2 rounded-full transition-[width,background-color] duration-200 ease-out",
               index === selectedIndex
                 ? "w-6 bg-primary"
                 : "w-2 bg-muted-foreground/30"
