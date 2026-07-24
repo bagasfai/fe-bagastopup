@@ -5,7 +5,7 @@ import { PencilIcon, Trash2Icon } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
 import type { Product } from "@workspace/api-client/types/product"
-import { formatDateTime } from "@/lib/format"
+import { formatCurrency, formatDateTime } from "@/lib/format"
 import { StatusBadge } from "@/components/status-badge"
 
 interface ProductColumnsOptions {
@@ -28,6 +28,11 @@ export function getProductColumns({
     {
       accessorKey: "name",
       header: "Product Name",
+    },
+    {
+      accessorKey: "sell_price",
+      header: "Sell Price",
+      cell: ({ row }) => formatCurrency(row.original.sell_price),
     },
     {
       id: "status",

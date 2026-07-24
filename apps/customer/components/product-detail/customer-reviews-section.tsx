@@ -3,7 +3,7 @@ import { StarIcon } from "lucide-react"
 import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { ProductReview } from "@/lib/dummy-product-detail"
+import type { ProductReview } from "@/lib/product-detail-types"
 
 function ReviewStars({ rating }: { rating: number }) {
   return (

@@ -11,7 +11,7 @@ import { SupportCard } from "@/components/product-detail/support-card"
 import { Footer } from "@/components/footer/footer"
 import { Navbar } from "@/components/navbar/navbar"
 import { productCategories } from "@/lib/dummy-data"
-import { getProductWithDetail, productDetails } from "@/lib/dummy-product-detail"
+import { getProductWithDetail } from "@/lib/get-product-detail"
 
 type ProductPageProps = {
   params: Promise<{ id: string }>
@@ -33,17 +33,9 @@ const CustomerReviewsSection = dynamic(() =>
   import("@/components/product-detail/customer-reviews-section").then((mod) => mod.CustomerReviewsSection),
 )
 
-// Pre-render the dummy products we have full detail config for at build
-// time; anything else still resolves on-demand (and 404s via notFound()
-// below if it has no detail config yet) instead of hard 404ing at the
-// routing layer, since `dynamicParams` defaults to true.
-function generateStaticParams() {
-  return Object.keys(productDetails).map((id) => ({ id }))
-}
-
 async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { id } = await params
-  const product = getProductWithDetail(id)
+  const product = await getProductWithDetail(id)
   if (!product) return { title: "Produk Tidak Ditemukan" }
 
   return {
@@ -59,7 +51,7 @@ async function generateMetadata({ params }: ProductPageProps): Promise<Metadata>
 
 export default async function ProductDetailPage({ params }: ProductPageProps) {
   const { id } = await params
-  const product = getProductWithDetail(id)
+  const product = await getProductWithDetail(id)
 
   if (!product) notFound()
 
@@ -91,4 +83,4 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   )
 }
 
-export { generateStaticParams, generateMetadata }
+export { generateMetadata }

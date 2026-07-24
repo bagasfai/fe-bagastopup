@@ -9,7 +9,7 @@ import { Button } from "@workspace/ui/components/button"
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion"
 import { formatIDR } from "@/lib/format"
 import { EASE_OUT } from "@/lib/motion"
-import type { ProductWithDetail, PromoCode } from "@/lib/dummy-product-detail"
+import type { ProductWithDetail, PromoCode } from "@/lib/product-detail-types"
 
 import { usePurchaseTotals } from "./order-summary"
 import type { PurchaseFormValues } from "./schema"

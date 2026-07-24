@@ -42,6 +42,7 @@ import type { Product } from "@workspace/api-client/types/product"
 const productSchema = z.object({
   category_id: z.number().int().positive("Category is required"),
   name: z.string().min(1, "Product name is required").max(150),
+  sell_price: z.number().int().positive("Sell price must be greater than 0"),
   is_active: z.boolean(),
 })
 
@@ -51,6 +52,7 @@ function defaultValuesFor(product?: Product | null): ProductFormValues {
   return {
     category_id: product?.category_id ?? 0,
     name: product?.name ?? "",
+    sell_price: product?.sell_price ?? 0,
     is_active: product?.is_active ?? true,
   }
 }
@@ -162,6 +164,19 @@ function ProductFormDialog({
                   {...form.register("name")}
                 />
                 <FieldError errors={[form.formState.errors.name]} />
+              </FieldContent>
+            </Field>
+            <Field data-invalid={!!form.formState.errors.sell_price}>
+              <FieldLabel htmlFor="sell_price">Sell Price</FieldLabel>
+              <FieldContent>
+                <Input
+                  id="sell_price"
+                  type="number"
+                  min={0}
+                  step={1}
+                  {...form.register("sell_price", { valueAsNumber: true })}
+                />
+                <FieldError errors={[form.formState.errors.sell_price]} />
               </FieldContent>
             </Field>
             <Field orientation="horizontal">

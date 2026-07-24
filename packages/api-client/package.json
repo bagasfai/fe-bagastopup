@@ -24,6 +24,7 @@
   "exports": {
     "./client": "./src/client.ts",
     "./auth-store": "./src/auth-store.ts",
+    "./use-auth-hydrated": "./src/use-auth-hydrated.ts",
     "./hooks/*": "./src/hooks/*.ts",
     "./types/*": "./src/types/*.ts"
   }

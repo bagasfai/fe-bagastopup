@@ -6,7 +6,7 @@ import { Field, FieldContent, FieldError, FieldLabel } from "@workspace/ui/compo
 import { Input } from "@workspace/ui/components/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
 
-import type { InputFieldConfig } from "@/lib/dummy-product-detail"
+import type { InputFieldConfig } from "@/lib/product-detail-types"
 import type { PurchaseFormValues } from "./schema"
 import { NumberedStepCard } from "./numbered-step-card"
 

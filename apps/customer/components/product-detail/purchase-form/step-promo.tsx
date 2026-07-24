@@ -7,7 +7,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@w
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 
-import type { PromoCode } from "@/lib/dummy-product-detail"
+import type { PromoCode } from "@/lib/product-detail-types"
 
 import { NumberedStepCard } from "./numbered-step-card"
 

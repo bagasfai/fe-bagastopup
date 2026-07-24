@@ -1,6 +1,6 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@workspace/ui/components/accordion"
 
-import type { QAItem } from "@/lib/dummy-product-detail"
+import type { QAItem } from "@/lib/product-detail-types"
 
 /**
  * Server Component — shared shell for "Important Notes" and "FAQ", which

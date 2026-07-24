@@ -1,13 +1,19 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
+import { ImageUpIcon, XIcon } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@workspace/ui/components/avatar"
 import {
   Dialog,
   DialogContent,
@@ -29,6 +35,7 @@ import {
   useCreateCategory,
   useUpdateCategory,
 } from "@workspace/api-client/hooks/use-categories"
+import { useUploadImage } from "@workspace/api-client/hooks/use-uploads"
 import type { Category } from "@workspace/api-client/types/category"
 
 const categorySchema = z.object({
@@ -38,6 +45,10 @@ const categorySchema = z.object({
     .min(1, "Slug is required")
     .max(100)
     .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "Use lowercase letters, numbers, and hyphens only"),
+  // Backend-controlled now (set from the /uploads response, not typed by
+  // the admin) — still validated as a URL as a sanity check, but there's
+  // no user-facing "invalid URL" error path anymore since it's never
+  // hand-typed.
   logo_url: z.union([z.url("Must be a valid URL"), z.literal("")]),
   is_active: z.boolean(),
 })
@@ -75,6 +86,8 @@ function CategoryFormDialog({
   const isEditing = !!category
   const createCategory = useCreateCategory()
   const updateCategory = useUpdateCategory()
+  const uploadImage = useUploadImage()
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Auto-fills the slug from the name while creating, until the user edits
   // the slug field directly — then it stops overwriting their input.
@@ -92,7 +105,35 @@ function CategoryFormDialog({
     }
   }, [open, category, form])
 
+  const logoUrl = form.watch("logo_url")
   const isSubmitting = createCategory.isPending || updateCategory.isPending
+
+  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0]
+    // Reset so selecting the same file again still fires onChange.
+    event.target.value = ""
+    if (!file) return
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File too large", { description: "Logo must be 5MB or smaller." })
+      return
+    }
+
+    uploadImage.mutate(
+      { file, folder: "categories" },
+      {
+        onSuccess: (data) => {
+          form.setValue("logo_url", data.url, { shouldValidate: true })
+        },
+        onError: (error: unknown) => {
+          toast.error("Failed to upload logo", {
+            description:
+              error instanceof ApiError ? error.message : "Something went wrong.",
+          })
+        },
+      }
+    )
+  }
 
   function onSubmit(values: CategoryFormValues) {
     const mutate = isEditing
@@ -167,12 +208,48 @@ function CategoryFormDialog({
               </FieldContent>
             </Field>
             <Field data-invalid={!!form.formState.errors.logo_url}>
-              <FieldLabel htmlFor="logo_url">Logo URL (optional)</FieldLabel>
+              <FieldLabel htmlFor="logo_upload">Logo (optional)</FieldLabel>
               <FieldContent>
-                <Input
-                  id="logo_url"
-                  placeholder="https://…"
-                  {...form.register("logo_url")}
+                <div className="flex items-center gap-3">
+                  <Avatar size="lg" className="rounded-lg">
+                    <AvatarImage src={logoUrl || undefined} alt="" className="rounded-lg" />
+                    <AvatarFallback className="rounded-lg">
+                      {form.watch("name").slice(0, 1).toUpperCase() || "?"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={uploadImage.isPending}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <ImageUpIcon />
+                    {uploadImage.isPending
+                      ? "Uploading…"
+                      : logoUrl
+                        ? "Replace"
+                        : "Upload"}
+                  </Button>
+                  {logoUrl && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      onClick={() => form.setValue("logo_url", "", { shouldValidate: true })}
+                    >
+                      <XIcon />
+                      <span className="sr-only">Remove logo</span>
+                    </Button>
+                  )}
+                </div>
+                <input
+                  ref={fileInputRef}
+                  id="logo_upload"
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                  className="hidden"
+                  onChange={handleFileChange}
                 />
                 <FieldError errors={[form.formState.errors.logo_url]} />
               </FieldContent>

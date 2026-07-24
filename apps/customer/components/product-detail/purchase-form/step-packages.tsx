@@ -12,7 +12,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion"
 import { formatIDR } from "@/lib/format"
 import { EASE_OUT } from "@/lib/motion"
-import type { PackageOption } from "@/lib/dummy-product-detail"
+import type { PackageOption } from "@/lib/product-detail-types"
 
 import { NumberedStepCard } from "./numbered-step-card"
 import type { PurchaseFormValues } from "./schema"

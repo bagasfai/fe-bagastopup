@@ -4,6 +4,11 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { PencilIcon, Trash2Icon } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@workspace/ui/components/avatar"
 import type { Category } from "@workspace/api-client/types/category"
 import { formatDateTime } from "@/lib/format"
 import { StatusBadge } from "@/components/status-badge"
@@ -20,6 +25,22 @@ export function getCategoryColumns({
   isDeleting,
 }: CategoryColumnsOptions): ColumnDef<Category>[] {
   return [
+    {
+      id: "logo",
+      header: "",
+      cell: ({ row }) => (
+        <Avatar className="rounded-lg">
+          <AvatarImage
+            src={row.original.logo_url || undefined}
+            alt=""
+            className="rounded-lg"
+          />
+          <AvatarFallback className="rounded-lg">
+            {row.original.name.slice(0, 1).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+      ),
+    },
     {
       accessorKey: "name",
       header: "Category Name",

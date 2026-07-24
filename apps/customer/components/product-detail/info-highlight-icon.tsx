@@ -1,6 +1,6 @@
 import { CalendarIcon, ClockIcon, GlobeIcon, ShieldCheckIcon, ZapIcon, type LucideIcon } from "lucide-react"
 
-import type { InfoHighlightIconKey } from "@/lib/dummy-product-detail"
+import type { InfoHighlightIconKey } from "@/lib/product-detail-types"
 
 const INFO_HIGHLIGHT_ICONS: Record<InfoHighlightIconKey, LucideIcon> = {
   zap: ZapIcon,

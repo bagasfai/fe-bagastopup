@@ -1,6 +1,6 @@
 import { LandmarkIcon, QrCodeIcon, StoreIcon, WalletIcon, type LucideIcon } from "lucide-react"
 
-import type { PaymentMethodIconKey } from "@/lib/dummy-product-detail"
+import type { PaymentMethodIconKey } from "@/lib/product-detail-types"
 
 const PAYMENT_METHOD_ICONS: Record<PaymentMethodIconKey, LucideIcon> = {
   wallet: WalletIcon,

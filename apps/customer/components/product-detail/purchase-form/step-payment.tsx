@@ -12,7 +12,7 @@ import { PaymentMethodIcon } from "@/components/product-detail/payment-method-ic
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion"
 import { formatFee } from "@/lib/format"
 import { EASE_OUT } from "@/lib/motion"
-import type { PaymentMethod, PaymentMethodGroup } from "@/lib/dummy-product-detail"
+import type { PaymentMethod, PaymentMethodGroup } from "@/lib/product-detail-types"
 
 import { NumberedStepCard } from "./numbered-step-card"
 import type { PurchaseFormValues } from "./schema"

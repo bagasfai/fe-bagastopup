@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import type { InputFieldConfig } from "@/lib/dummy-product-detail"
+import type { InputFieldConfig } from "@/lib/product-detail-types"
 
 /**
  * Account fields are config-driven (a product can ask for 1 field or 3, a

@@ -50,23 +50,16 @@ export const heroSlides: HeroSlide[] = [
   },
 ]
 
-export type PopularGame = {
-  id: string
-  name: string
-  imageSrc: string
-}
-
-export const popularGames: PopularGame[] = [
-  { id: "mobile-legends", name: "Mobile Legends", imageSrc: "/games/mobile-legends.svg" },
-  { id: "free-fire", name: "Free Fire", imageSrc: "/games/free-fire.svg" },
-  { id: "pubg-mobile", name: "PUBG Mobile", imageSrc: "/games/pubg-mobile.svg" },
-  { id: "genshin-impact", name: "Genshin Impact", imageSrc: "/games/genshin-impact.svg" },
-  { id: "valorant", name: "Valorant", imageSrc: "/games/valorant.svg" },
-  { id: "codm", name: "Call of Duty Mobile", imageSrc: "/games/codm.svg" },
-  { id: "honkai-star-rail", name: "Honkai: Star Rail", imageSrc: "/games/honkai-star-rail.svg" },
-  { id: "efootball", name: "eFootball", imageSrc: "/games/efootball.svg" },
-]
-
+/**
+ * NOTE: PopularGame/popularGames used to live here — the homepage's
+ * "Game Populer" section now sources this from be-bagastopup's real
+ * Category list (see app/page.tsx + components/popular-games/*), so
+ * it's gone. productCategories/products below are still dummy and are
+ * still used, but only by app/product/[id]'s recommended-products
+ * fallback and breadcrumb — a known gap carried forward from ADR-0001
+ * (no real cross-category grouping/recommendation exists on the backend
+ * yet), not part of the homepage.
+ */
 export type ProductCategoryId = "top-up-game" | "voucher" | "pulsa-tagihan" | "entertainment"
 
 export type ProductCategory = {

@@ -26,7 +26,8 @@ import {
 } from "@workspace/ui/components/field"
 import { ApiError } from "@workspace/api-client/client"
 import { useLogin } from "@workspace/api-client/hooks/use-auth"
-import { useAuthStore, useAuthHydrated } from "@workspace/api-client/auth-store"
+import { useAuthStore } from "@workspace/api-client/auth-store"
+import { useAuthHydrated } from "@workspace/api-client/use-auth-hydrated"
 import { Brand } from "@/components/layout/brand"
 
 const loginSchema = z.object({

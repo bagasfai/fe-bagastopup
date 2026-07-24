@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { FormProvider, type Resolver, useForm } from "react-hook-form"
 import { toast } from "sonner"
 
-import type { ProductWithDetail, PromoCode } from "@/lib/dummy-product-detail"
+import type { ProductWithDetail, PromoCode } from "@/lib/product-detail-types"
 
 import { BuyButton } from "./buy-button"
 import { OrderSummary } from "./order-summary"

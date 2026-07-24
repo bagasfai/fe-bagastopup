@@ -4,7 +4,8 @@ import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2Icon } from "lucide-react"
 
-import { useAuthStore, useAuthHydrated } from "@workspace/api-client/auth-store"
+import { useAuthStore } from "@workspace/api-client/auth-store"
+import { useAuthHydrated } from "@workspace/api-client/use-auth-hydrated"
 import { useMe } from "@workspace/api-client/hooks/use-auth"
 
 // Client-side gate: there's no server session (JWT lives in localStorage,

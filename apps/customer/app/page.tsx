@@ -1,6 +1,9 @@
 import type { Metadata } from "next"
 import dynamic from "next/dynamic"
 
+import { fetchStorefrontCategories } from "@workspace/api-client/hooks/use-storefront"
+import type { StorefrontCategory } from "@workspace/api-client/types/storefront-category"
+
 import { AllProductsSection } from "@/components/all-products/all-products-section"
 import { FloatingCsButton } from "@/components/cs-button/floating-cs-button"
 import { Footer } from "@/components/footer/footer"
@@ -9,13 +12,20 @@ import { HowItWorksSection } from "@/components/how-it-works/how-it-works-sectio
 import { Navbar } from "@/components/navbar/navbar"
 import { PopularGamesSection } from "@/components/popular-games/popular-games-section"
 import { TrustRowSection } from "@/components/trust-row/trust-row-section"
-import { heroSlides, popularGames } from "@/lib/dummy-data"
+import { heroSlides } from "@/lib/dummy-data"
 
 export const metadata: Metadata = {
   title: "BagasTopup — Top Up Game, Voucher, Pulsa & Tagihan Termurah",
   description:
     "Top up Mobile Legends, Free Fire, PUBG Mobile, voucher game, pulsa, dan tagihan dengan proses instan, harga terbaik, dan pembayaran aman.",
 }
+
+// Re-fetch the catalog every 60s (ISR) rather than caching it
+// indefinitely — this route has no dynamic segment to force per-request
+// rendering the way app/product/[id]/page.tsx gets for free, but prices
+// and active categories change often enough that a build-time-only
+// fetch would go stale.
+export const revalidate = 60
 
 // Below-the-fold sections that aren't critical for first paint or SEO
 // ranking get code-split into separate chunks so the initial JS payload
@@ -32,17 +42,32 @@ const FeedbackFormSection = dynamic(() =>
   )
 )
 
-// Server Component: the page shell itself renders no interactive markup,
-// it only composes sections (some server, some client) and passes down
-// dummy data as props.
-export default function Page() {
+/**
+ * Server Component: the page shell composes sections (some server, some
+ * client). heroSlides/howItWorksSteps/trustPoints/testimonials stay on
+ * dummy data deliberately — they're marketing copy with no backend
+ * model (see lib/dummy-data.ts). Categories and their products are real,
+ * fetched here server-side so PopularGamesSection and AllProductsSection
+ * get live data as props instead of owning their own fetch.
+ */
+export default async function Page() {
+  let categories: StorefrontCategory[] = []
+  try {
+    categories = await fetchStorefrontCategories()
+  } catch (error) {
+    // Don't 500 the whole homepage if the backend is briefly unreachable
+    // — render with an empty catalog instead, sections already handle
+    // the empty-array case gracefully.
+    console.error("Failed to load storefront categories", error)
+  }
+
   return (
     <div className="flex min-h-svh flex-col">
       <Navbar />
       <main className="flex-1">
         <HeroCarousel slides={heroSlides} />
-        <PopularGamesSection games={popularGames} />
-        <AllProductsSection />
+        <PopularGamesSection categories={categories} />
+        <AllProductsSection categories={categories} />
         <HowItWorksSection />
         <TrustRowSection />
         <TestimonialsSection />

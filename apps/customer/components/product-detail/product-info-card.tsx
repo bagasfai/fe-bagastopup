@@ -1,4 +1,4 @@
-import type { ProductInfoHighlight } from "@/lib/dummy-product-detail"
+import type { ProductInfoHighlight } from "@/lib/product-detail-types"
 import { InfoHighlightIcon } from "@/components/product-detail/info-highlight-icon"
 
 /** Server Component — renders whatever `infoHighlights` the product config has, no fixed count assumed. */

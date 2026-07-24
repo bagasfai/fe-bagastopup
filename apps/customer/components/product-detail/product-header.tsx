@@ -4,7 +4,7 @@ import Image from "next/image"
 import { Badge } from "@workspace/ui/components/badge"
 
 import { ProductIcon } from "@/components/all-products/product-icon"
-import type { ProductWithDetail } from "@/lib/dummy-product-detail"
+import type { ProductWithDetail } from "@/lib/product-detail-types"
 
 /**
  * Server Component — every value here is either static dummy data or a

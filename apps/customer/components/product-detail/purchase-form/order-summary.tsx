@@ -5,7 +5,7 @@ import { useFormContext, useWatch } from "react-hook-form"
 import { Separator } from "@workspace/ui/components/separator"
 
 import { formatIDR } from "@/lib/format"
-import type { ProductWithDetail, PromoCode } from "@/lib/dummy-product-detail"
+import type { ProductWithDetail, PromoCode } from "@/lib/product-detail-types"
 
 import { NumberedStepCard } from "./numbered-step-card"
 import type { PurchaseFormValues } from "./schema"

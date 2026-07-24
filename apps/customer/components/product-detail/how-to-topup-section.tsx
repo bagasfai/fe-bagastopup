@@ -4,7 +4,7 @@ import { motion } from "framer-motion"
 
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion"
 import { EASE_OUT } from "@/lib/motion"
-import type { HowToStep } from "@/lib/dummy-product-detail"
+import type { HowToStep } from "@/lib/product-detail-types"
 
 /**
  * Client Component only because of the scroll-triggered reveal
