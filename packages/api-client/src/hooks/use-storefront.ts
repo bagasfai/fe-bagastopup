@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 
 import { apiFetch } from "@workspace/api-client/client"
 import type { StorefrontCategory } from "@workspace/api-client/types/storefront-category"
+import type { StorefrontCategoryGroup } from "@workspace/api-client/types/storefront-category-group"
 
 /**
  * fetchStorefrontCategoryBySlug is a plain async function, not a hook —
@@ -55,5 +56,29 @@ export function useStorefrontCategories() {
   return useQuery({
     queryKey: ["storefront-categories"],
     queryFn: fetchStorefrontCategories,
+  })
+}
+
+/**
+ * fetchStorefrontCategoryGroups powers apps/customer's "Semua Produk"
+ * section — every active CategoryGroup with its active Categories
+ * preloaded (game cards, not denominations), plus a synthetic "Lainnya"
+ * group for any ungrouped active Category. Same public, unauthenticated,
+ * server-Component-callable story as fetchStorefrontCategories above. See
+ * ADR-0002.
+ */
+export function fetchStorefrontCategoryGroups() {
+  return apiFetch<StorefrontCategoryGroup[]>("/storefront/category-groups")
+}
+
+/**
+ * useStorefrontCategoryGroups exists for the same "future client-side
+ * usage" reason as useStorefrontCategories above — the homepage itself
+ * fetches server-side via fetchStorefrontCategoryGroups directly.
+ */
+export function useStorefrontCategoryGroups() {
+  return useQuery({
+    queryKey: ["storefront-category-groups"],
+    queryFn: fetchStorefrontCategoryGroups,
   })
 }

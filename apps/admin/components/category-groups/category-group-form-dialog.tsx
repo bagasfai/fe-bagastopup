@@ -29,45 +29,30 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@workspace/ui/components/field"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select"
 import { Switch } from "@workspace/ui/components/switch"
 import { ApiError } from "@workspace/api-client/client"
 import {
-  useCreateCategory,
-  useUpdateCategory,
-} from "@workspace/api-client/hooks/use-categories"
-import { useCategoryGroups } from "@workspace/api-client/hooks/use-category-groups"
+  useCreateCategoryGroup,
+  useUpdateCategoryGroup,
+} from "@workspace/api-client/hooks/use-category-groups"
 import { useUploadImage } from "@workspace/api-client/hooks/use-uploads"
-import type { Category } from "@workspace/api-client/types/category"
+import type { CategoryGroup } from "@workspace/api-client/types/category-group"
 
-// Sentinel for "no group assigned" — Radix Select can't use "" as an
-// item value (reserved to mean "show the placeholder"), so this stands
-// in for null and gets mapped back to null in onSubmit below.
-const NO_GROUP_VALUE = "none"
-
-const categorySchema = z.object({
-  name: z.string().min(1, "Category name is required").max(100),
+const categoryGroupSchema = z.object({
+  name: z.string().min(1, "Group name is required").max(100),
   slug: z
     .string()
     .min(1, "Slug is required")
     .max(100)
     .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "Use lowercase letters, numbers, and hyphens only"),
-  // Backend-controlled now (set from the /uploads response, not typed by
-  // the admin) — still validated as a URL as a sanity check, but there's
-  // no user-facing "invalid URL" error path anymore since it's never
-  // hand-typed.
-  logo_url: z.union([z.url("Must be a valid URL"), z.literal("")]),
+  // Same "backend-controlled, set from the /uploads response" story as
+  // Category.logo_url — see category-form-dialog.tsx.
+  icon_url: z.union([z.url("Must be a valid URL"), z.literal("")]),
+  sort_order: z.number().int("Must be a whole number"),
   is_active: z.boolean(),
-  group_id: z.number().nullable(),
 })
 
-type CategoryFormValues = z.infer<typeof categorySchema>
+type CategoryGroupFormValues = z.infer<typeof categoryGroupSchema>
 
 function slugify(value: string) {
   return value
@@ -77,52 +62,52 @@ function slugify(value: string) {
     .replace(/(^-|-$)/g, "")
 }
 
-function defaultValuesFor(category?: Category | null): CategoryFormValues {
+function defaultValuesFor(group?: CategoryGroup | null): CategoryGroupFormValues {
   return {
-    name: category?.name ?? "",
-    slug: category?.slug ?? "",
-    logo_url: category?.logo_url ?? "",
-    is_active: category?.is_active ?? true,
-    group_id: category?.group_id ?? null,
+    name: group?.name ?? "",
+    slug: group?.slug ?? "",
+    icon_url: group?.icon_url ?? "",
+    sort_order: group?.sort_order ?? 0,
+    is_active: group?.is_active ?? true,
   }
 }
 
-interface CategoryFormDialogProps {
+interface CategoryGroupFormDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  category?: Category | null
+  group?: CategoryGroup | null
 }
 
-function CategoryFormDialog({
+function CategoryGroupFormDialog({
   open,
   onOpenChange,
-  category,
-}: CategoryFormDialogProps) {
-  const isEditing = !!category
-  const createCategory = useCreateCategory()
-  const updateCategory = useUpdateCategory()
+  group,
+}: CategoryGroupFormDialogProps) {
+  const isEditing = !!group
+  const createCategoryGroup = useCreateCategoryGroup()
+  const updateCategoryGroup = useUpdateCategoryGroup()
   const uploadImage = useUploadImage()
-  const { data: categoryGroups } = useCategoryGroups()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Auto-fills the slug from the name while creating, until the user edits
-  // the slug field directly — then it stops overwriting their input.
+  // the slug field directly — then it stops overwriting their input. Same
+  // pattern as CategoryFormDialog.
   const [slugTouched, setSlugTouched] = useState(isEditing)
 
-  const form = useForm<CategoryFormValues>({
-    resolver: zodResolver(categorySchema),
-    defaultValues: defaultValuesFor(category),
+  const form = useForm<CategoryGroupFormValues>({
+    resolver: zodResolver(categoryGroupSchema),
+    defaultValues: defaultValuesFor(group),
   })
 
   useEffect(() => {
     if (open) {
-      form.reset(defaultValuesFor(category))
-      setSlugTouched(!!category)
+      form.reset(defaultValuesFor(group))
+      setSlugTouched(!!group)
     }
-  }, [open, category, form])
+  }, [open, group, form])
 
-  const logoUrl = form.watch("logo_url")
-  const isSubmitting = createCategory.isPending || updateCategory.isPending
+  const iconUrl = form.watch("icon_url")
+  const isSubmitting = createCategoryGroup.isPending || updateCategoryGroup.isPending
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
@@ -131,18 +116,18 @@ function CategoryFormDialog({
     if (!file) return
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("File too large", { description: "Logo must be 5MB or smaller." })
+      toast.error("File too large", { description: "Icon must be 5MB or smaller." })
       return
     }
 
     uploadImage.mutate(
-      { file, folder: "categories" },
+      { file, folder: "category-groups" },
       {
         onSuccess: (data) => {
-          form.setValue("logo_url", data.url, { shouldValidate: true })
+          form.setValue("icon_url", data.url, { shouldValidate: true })
         },
         onError: (error: unknown) => {
-          toast.error("Failed to upload logo", {
+          toast.error("Failed to upload icon", {
             description:
               error instanceof ApiError ? error.message : "Something went wrong.",
           })
@@ -151,10 +136,10 @@ function CategoryFormDialog({
     )
   }
 
-  function onSubmit(values: CategoryFormValues) {
+  function onSubmit(values: CategoryGroupFormValues) {
     const mutate = isEditing
-      ? updateCategory.mutateAsync({ id: category.id, ...values })
-      : createCategory.mutateAsync(values)
+      ? updateCategoryGroup.mutateAsync({ id: group.id, ...values })
+      : createCategoryGroup.mutateAsync(values)
 
     mutate
       .then(() => {
@@ -163,7 +148,7 @@ function CategoryFormDialog({
       })
       .catch((error: unknown) => {
         toast.error(
-          isEditing ? "Failed to update category" : "Failed to create category",
+          isEditing ? "Failed to update group" : "Failed to create group",
           {
             description:
               error instanceof ApiError ? error.message : "Something went wrong.",
@@ -182,21 +167,21 @@ function CategoryFormDialog({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{isEditing ? "Edit Category" : "Add Category"}</DialogTitle>
+          <DialogTitle>{isEditing ? "Edit Category Group" : "Add Category Group"}</DialogTitle>
           <DialogDescription>
             {isEditing
-              ? "Update this category's details."
-              : "Create a new game category."}
+              ? "Update this group's details."
+              : "Create a new storefront grouping, e.g. \"Mobile Game\" or \"Voucher\"."}
           </DialogDescription>
         </DialogHeader>
-        <form id="category-form" onSubmit={form.handleSubmit(onSubmit)}>
+        <form id="category-group-form" onSubmit={form.handleSubmit(onSubmit)}>
           <FieldGroup>
             <Field data-invalid={!!form.formState.errors.name}>
-              <FieldLabel htmlFor="name">Category Name</FieldLabel>
+              <FieldLabel htmlFor="name">Group Name</FieldLabel>
               <FieldContent>
                 <Input
                   id="name"
-                  placeholder="e.g. Mobile Legends"
+                  placeholder="e.g. Mobile Game"
                   {...form.register("name", {
                     onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
                       if (!slugTouched) {
@@ -215,7 +200,7 @@ function CategoryFormDialog({
               <FieldContent>
                 <Input
                   id="slug"
-                  placeholder="e.g. mobile-legends"
+                  placeholder="e.g. mobile-game"
                   {...form.register("slug", {
                     onChange: () => setSlugTouched(true),
                   })}
@@ -223,12 +208,12 @@ function CategoryFormDialog({
                 <FieldError errors={[form.formState.errors.slug]} />
               </FieldContent>
             </Field>
-            <Field data-invalid={!!form.formState.errors.logo_url}>
-              <FieldLabel htmlFor="logo_upload">Logo (optional)</FieldLabel>
+            <Field data-invalid={!!form.formState.errors.icon_url}>
+              <FieldLabel htmlFor="icon_upload">Icon (optional)</FieldLabel>
               <FieldContent>
                 <div className="flex items-center gap-3">
                   <Avatar size="lg" className="rounded-lg">
-                    <AvatarImage src={logoUrl || undefined} alt="" className="rounded-lg" />
+                    <AvatarImage src={iconUrl || undefined} alt="" className="rounded-lg" />
                     <AvatarFallback className="rounded-lg">
                       {form.watch("name").slice(0, 1).toUpperCase() || "?"}
                     </AvatarFallback>
@@ -243,61 +228,44 @@ function CategoryFormDialog({
                     <ImageUpIcon />
                     {uploadImage.isPending
                       ? "Uploading…"
-                      : logoUrl
+                      : iconUrl
                         ? "Replace"
                         : "Upload"}
                   </Button>
-                  {logoUrl && (
+                  {iconUrl && (
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon-sm"
-                      onClick={() => form.setValue("logo_url", "", { shouldValidate: true })}
+                      onClick={() => form.setValue("icon_url", "", { shouldValidate: true })}
                     >
                       <XIcon />
-                      <span className="sr-only">Remove logo</span>
+                      <span className="sr-only">Remove icon</span>
                     </Button>
                   )}
                 </div>
                 <input
                   ref={fileInputRef}
-                  id="logo_upload"
+                  id="icon_upload"
                   type="file"
                   accept="image/png,image/jpeg,image/webp,image/svg+xml"
                   className="hidden"
                   onChange={handleFileChange}
                 />
-                <FieldError errors={[form.formState.errors.logo_url]} />
+                <FieldError errors={[form.formState.errors.icon_url]} />
               </FieldContent>
             </Field>
-            <Field data-invalid={!!form.formState.errors.group_id}>
-              <FieldLabel htmlFor="group_id">Group (optional)</FieldLabel>
+            <Field data-invalid={!!form.formState.errors.sort_order}>
+              <FieldLabel htmlFor="sort_order">Sort Order</FieldLabel>
               <FieldContent>
-                <Controller
-                  control={form.control}
-                  name="group_id"
-                  render={({ field }) => (
-                    <Select
-                      value={field.value === null ? NO_GROUP_VALUE : String(field.value)}
-                      onValueChange={(value) =>
-                        field.onChange(value === NO_GROUP_VALUE ? null : Number(value))
-                      }
-                    >
-                      <SelectTrigger id="group_id" className="w-full">
-                        <SelectValue placeholder="No group" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value={NO_GROUP_VALUE}>No group</SelectItem>
-                        {categoryGroups?.map((group) => (
-                          <SelectItem key={group.id} value={String(group.id)}>
-                            {group.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
+                <Input
+                  id="sort_order"
+                  type="number"
+                  step={1}
+                  placeholder="0"
+                  {...form.register("sort_order", { valueAsNumber: true })}
                 />
-                <FieldError errors={[form.formState.errors.group_id]} />
+                <FieldError errors={[form.formState.errors.sort_order]} />
               </FieldContent>
             </Field>
             <Field orientation="horizontal">
@@ -324,8 +292,8 @@ function CategoryFormDialog({
           >
             Cancel
           </Button>
-          <Button type="submit" form="category-form" disabled={isSubmitting}>
-            {isSubmitting ? "Saving…" : "Save Category"}
+          <Button type="submit" form="category-group-form" disabled={isSubmitting}>
+            {isSubmitting ? "Saving…" : "Save Group"}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -333,4 +301,4 @@ function CategoryFormDialog({
   )
 }
 
-export { CategoryFormDialog }
+export { CategoryGroupFormDialog }
